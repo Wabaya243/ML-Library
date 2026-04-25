@@ -63,7 +63,7 @@ print("Evalution du resultat : ", results)
 
 # GPT3 avec la bibliotheque openAI
 from openai import OpenAI
-client = OpenAI(api_key="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")
+client = OpenAI(api_key="")
 
 response = client.chat.completions.create(
     model="gpt-3.5-turbo",
