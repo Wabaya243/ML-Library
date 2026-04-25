@@ -1,0 +1,10 @@
+Avion
+automobile
+Oiseaux
+Chatte
+Cerf
+Chien
+Grenouille
+Cheval
+Bateaux
+Camion

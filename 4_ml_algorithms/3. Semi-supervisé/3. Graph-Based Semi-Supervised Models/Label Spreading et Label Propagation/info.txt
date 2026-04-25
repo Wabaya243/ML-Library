@@ -1,0 +1,106 @@
+Exact, ce n’est **pas du Self-Training** dans ton code. 😅
+
+Voici la différence clé :
+
+| Méthode                           | Comment ça fonctionne                                                                                                                                                                                               | Self-Training ? |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| **Label Propagation / Spreading** | On construit un graphe de similarité entre **tous** les points et on propage les labels connus vers les inconnus en même temps, en utilisant la structure des données. Pas de boucle “réentraîner + pseudo-labels”. | ❌ Non           |
+| **Self-Training**                 | On entraîne un modèle classique sur les labels connus, on prédit les labels pour les points non étiquetés, on ajoute ces pseudo-labels au training set, et on réentraîne plusieurs fois jusqu’à convergence.        | ✅ Oui           |
+
+💡 En résumé :
+
+* LP/LS = propagation directe sur le graphe des points, **une seule étape**.
+* Self-Training = approche itérative avec pseudo-labels et réentraînement.
+
+Donc, ton code fait bien du **semi-supervisé**, mais **par propagation de labels**, pas par self-training.
+
+Si tu veux, je peux te montrer **une version Self-Training avec Logistic Regression** sur tes mêmes données pour comparer. Ça clarifie souvent beaucoup la différence.
+
+Veux‑tu que je fasse ça ?
+
+
+
+
+
+
+Ah, je comprends mieux ton point de confusion ! 😊 On va clarifier tout ça, étape par étape, parce qu’il y a pas mal de concepts semi-supervisés qui peuvent paraître magiques au premier abord.
+
+---
+
+## 1️⃣ Pourquoi on remplace les labels non étiquetés par `-1`
+
+Regarde cette partie du code :
+
+```python
+y_1_2 = np.concatenate((y_1, y_2.apply(lambda x: -1)))
+```
+
+* `y_1` : ce sont tes labels connus (10 % des données).
+* `y_2` : ce sont tes données **non étiquetées** (40 %).
+* On remplace leurs labels par `-1` parce que **Label Propagation** et **Label Spreading** ont besoin de savoir quelles données ont des labels connus et lesquelles n’en ont pas.
+
+> Les `-1` disent au modèle : « Pour toi, je ne te donne pas la vraie réponse, tu dois l’estimer toi-même à partir de la structure des données et des voisins. »
+
+Si on ne faisait pas ça, le modèle traiterait toutes les données comme étiquetées et il n’y aurait **aucun apprentissage semi-supervisé**.
+
+---
+
+## 2️⃣ C’est quoi Label Propagation et Label Spreading ?
+
+Ces deux algorithmes sont des **méthodes semi-supervisées basées sur un graphe**.
+
+### Label Propagation (LP)
+
+1. On construit un **graphe des points**, où chaque point est connecté à ses voisins proches ou via un kernel RBF (mesure de similarité).
+2. On **propage les labels connus vers les points inconnus** en fonction de leur proximité sur le graphe.
+3. Le processus s’arrête quand les labels ne changent plus (convergence).
+
+**Caractéristiques :**
+
+* Plus simple que Label Spreading.
+* Peut être instable si le graphe est mal construit.
+* Les labels inconnus sont mis à jour directement à chaque itération.
+
+---
+
+### Label Spreading (LS)
+
+Très similaire à LP, mais :
+
+* On utilise un **alpha** pour contrôler la force de diffusion des labels.
+* Au lieu de forcer les labels connus à rester inchangés, on laisse un peu de flexibilité (c’est plus **robuste aux erreurs de labels**).
+* Permet de mieux gérer le bruit dans les données.
+
+**En pratique :**
+
+* LP = “je propague strictement ce que je sais”.
+* LS = “je diffuse ce que je sais mais avec un peu de tolérance”.
+
+---
+
+## 3️⃣ Self-Training vs Label Propagation/Spreading
+
+Dans certains tutoriels, on parle de **Self-Training** :
+
+* On entraîne d’abord un modèle sur les données étiquetées.
+* Ensuite, on prédit les labels pour les données non étiquetées.
+* On ajoute ces nouvelles pseudo-étiquettes au training set, puis on réentraîne.
+* Répété jusqu’à convergence.
+
+> Dans ton code, on ne fait **pas exactement du Self-Training**.
+> Ici, Label Propagation et Label Spreading sont des **méthodes semi-supervisées “directes”** qui utilisent les relations entre points pour estimer les labels non étiquetés. Pas besoin de réentraîner plusieurs fois comme Self-Training classique.
+
+---
+
+## 4️⃣ Pourquoi ça marche ?
+
+* Les algorithmes exploitent la **structure de la donnée** : points proches ont souvent le même label.
+* Même si tu as peu de données étiquetées (10 % dans ton code), ils peuvent généraliser correctement grâce aux données non étiquetées.
+
+C’est pour ça qu’on remplace les labels inconnus par `-1` : pour que l’algorithme sache quoi estimer et quoi garder fixe.
+
+---
+
+Si tu veux, je peux te faire un **schéma simple en Python / graphique** qui montre **comment Label Propagation remplit les labels manquants** étape par étape.
+
+Veux‑tu que je fasse ça ?

@@ -1,0 +1,330 @@
+"""
+=====================================================
+EXPLICATION DES COLONNES FINRL (FeatureEngineer)
+=====================================================
+
+Ce dataset est utilisé par FinRL pour entraîner un agent
+de Reinforcement Learning (DDPG ici) sur ETH-USD.
+
+ETH-USD, c’est simplement le ticker (symbole) utilisé sur les marchés pour désigner :
+
+ ETH-USD = Ethereum contre Dollar US
+Élément	Signification
+ETH	Ethereum (la crypto)
+USD	Dollar américain
+ETH-USD	Prix d’1 Ethereum exprimé en dollars
+
+ Exemple :
+Si ETH-USD = 2500, alors 1 ETH = 2500 $
+
+Les colonnes sont regroupées en 5 catégories :
+1) Données de marché brutes
+2) Colonnes obligatoires FinRL
+3) Indicateurs techniques
+4) Indicateurs de tendance
+5) Indicateur de risque (turbulence)
+"""
+
+# =====================================================
+# 1) DONNÉES DE MARCHÉ (Yahoo Finance)
+# =====================================================
+# Ces colonnes proviennent directement de yfinance
+
+# date    : Date de la bougie (datetime)
+# open    : Prix d'ouverture
+# high    : Prix le plus haut
+# low     : Prix le plus bas
+# close   : Prix de clôture
+# volume  : Volume échangé
+
+
+# =====================================================
+# 2) COLONNES AJOUTÉES MANUELLEMENT (OBLIGATOIRES FINRL)
+# =====================================================
+
+# tic : Identifiant de l'actif (ex: "ETH-USD")
+#       FinRL est multi-actifs par design, même avec 1 seul actif
+
+# day : Jour de la semaine
+#       0 = Lundi
+#       1 = Mardi
+#       2 = Mercredi
+#       3 = Jeudi
+#       4 = Vendredi
+#       5 = Samedi
+#       6 = Dimanche
+#
+#       Permet à l’agent de capter des patterns temporels
+
+
+# =====================================================
+# 3) INDICATEURS TECHNIQUES (FeatureEngineer)
+# =====================================================
+# Générés automatiquement par :
+# FeatureEngineer(use_technical_indicator=True)
+
+# macd :
+#   Moving Average Convergence Divergence
+#   → Indicateur de momentum et de retournement de tendance
+
+# rsi_30 :
+#   Relative Strength Index sur 30 périodes
+#   → Surachat / Survente
+#   RSI > 70 = surachat
+#   RSI < 30 = survente
+
+# cci_30 :
+#   Commodity Channel Index sur 30 périodes
+#   → Détection des cycles et excès de prix
+
+# dx_30 :
+#   Directional Movement Index sur 30 périodes
+#   → Force de la tendance (sans direction)
+
+# =====================================================
+# 4) VOLATILITÉ & BANDES DE BOLLINGER
+# =====================================================
+
+# boll_ub :
+#   Bande de Bollinger supérieure
+#   → Zone de surachat potentiel
+
+# boll_lb :
+#   Bande de Bollinger inférieure
+#   → Zone de survente potentiel
+
+
+# =====================================================
+# 5) MOYENNES MOBILES
+# =====================================================
+
+# close_30_sma :
+#   Moyenne mobile simple sur 30 périodes
+#   → Tendance court/moyen terme
+
+# close_60_sma :
+#   Moyenne mobile simple sur 60 périodes
+#   → Tendance moyen/long terme
+
+
+# =====================================================
+# 6) INDICATEUR DE RISQUE (TURBULENCE)
+# =====================================================
+
+# turbulence :
+#   Mesure du stress global du marché
+#   → Plus la valeur est élevée, plus le marché est instable
+#
+# Utilisé pour :
+#   - réduire le trading en période chaotique
+#   - forcer l’agent à rester en cash
+#
+# IMPORTANT :
+# Dans ton environnement de trading, il faut utiliser :
+#
+# risk_indicator_col = 'turbulence'
+#
+# ET PAS 'vix' (qui n'existe pas dans ton dataset)
+
+
+# =====================================================
+# 7) ÉTAT (STATE) VU PAR L’AGENT RL
+# =====================================================
+#
+# L'état envoyé au réseau neuronal est :
+#
+# state = [
+#   cash,
+#   prix de l'actif,
+#   nombre d'actions détenues,
+#   indicateurs techniques
+# ]
+#
+# Taille calculée par :
+#
+# state_space = 1 + 2 * stock_dimension + len(INDICATORS) * stock_dimension
+#
+# Avec 1 actif (ETH) :
+# state_space = 1 + 2 + len(INDICATORS)
+
+
+# =====================================================
+# 8) POUR SIMPLIFIER L'APPRENTISSAGE (OPTIONNEL)
+# =====================================================
+#
+# Tu peux réduire le nombre d'indicateurs :
+#
+# INDICATORS = [
+#     'rsi_30',
+#     'macd',
+#     'close_30_sma'
+# ]
+#
+# Avantages :
+#   - apprentissage plus rapide
+#   - moins de bruit
+#   - plus stable sur crypto
+
+
+# =====================================================
+# FIN DU DOCUMENT
+# =====================================================
+"""
+
+
+# =====================================================
+# PARAMÈTRES DE L’ENVIRONNEMENT DE TRADING (FinRL)
+# =====================================================
+# Ces hyperparamètres définissent :
+# - les règles du marché
+# - le capital
+# - les contraintes de trading
+# - la façon dont l’agent est récompensé
+
+env_kwargs = {
+
+    # -------------------------------------------------
+    # hmax : nombre maximum d’unités achetables/vendables
+    # à chaque step (journée ici)
+    #
+    # Exemple :
+    # hmax = 100
+    # → l’agent peut acheter OU vendre au maximum
+    #   100 unités d’ETH par jour
+    #
+    # Impact :
+    # - trop grand → trading agressif, instable
+    # - trop petit → apprentissage lent
+    # -------------------------------------------------
+    "hmax": 100,
+
+
+    # -------------------------------------------------
+    # initial_amount : capital initial du portefeuille
+    #
+    # Exemple :
+    # initial_amount = 10000
+    # → l’agent commence avec 10 000 $
+    #
+    # Sert de référence pour calculer :
+    # - profit
+    # - drawdown
+    # - reward
+    # -------------------------------------------------
+    "initial_amount": 10000,
+
+
+    # -------------------------------------------------
+    # num_stock_shares : positions initiales
+    #
+    # Exemple :
+    # [0]
+    # → l’agent commence sans ETH en portefeuille
+    #
+    # Taille = nombre d’actifs
+    # -------------------------------------------------
+    "num_stock_shares": num_stock_shares,
+
+
+    # -------------------------------------------------
+    # buy_cost_pct : frais d’achat par actif
+    #
+    # Exemple :
+    # 0.001 = 0.1 %
+    #
+    # Simule :
+    # - frais d’exchange
+    # - slippage
+    #
+    # Empêche l’agent de sur-trader
+    # -------------------------------------------------
+    "buy_cost_pct": buy_cost_list,
+
+
+    # -------------------------------------------------
+    # sell_cost_pct : frais de vente par actif
+    #
+    # Généralement identique à buy_cost_pct
+    #
+    # Important :
+    # sans frais → stratégie irréaliste
+    # -------------------------------------------------
+    "sell_cost_pct": sell_cost_list,
+
+
+    # -------------------------------------------------
+    # state_space : taille du vecteur d’état
+    #
+    # state = [
+    #   cash,
+    #   prix,
+    #   positions,
+    #   indicateurs techniques
+    # ]
+    #
+    # Calculé par :
+    # 1 + 2 * stock_dim + len(INDICATORS) * stock_dim
+    #
+    # Définit la taille d’entrée du réseau neuronal
+    # -------------------------------------------------
+    "state_space": state_space,
+
+
+    # -------------------------------------------------
+    # stock_dim : nombre d’actifs tradés
+    #
+    # Exemple :
+    # 1 → ETH uniquement
+    # 3 → BTC, ETH, SOL
+    #
+    # Impact :
+    # - dimension de l’action
+    # - dimension de l’état
+    # -------------------------------------------------
+    "stock_dim": stock_dimension,
+
+
+    # -------------------------------------------------
+    # tech_indicator_list : indicateurs techniques utilisés
+    #
+    # Ces indicateurs composent une partie de l’état
+    # et servent de signaux de trading à l’agent
+    #
+    # Trop d’indicateurs :
+    # → bruit
+    # Trop peu :
+    # → information insuffisante
+    # -------------------------------------------------
+    "tech_indicator_list": INDICATORS,
+
+
+    # -------------------------------------------------
+    # action_space : dimension de l’action
+    #
+    # action ∈ [-1, 1] pour chaque actif
+    #
+    # Exemple :
+    # -1 → vendre
+    #  0 → hold
+    #  1 → acheter
+    #
+    # Taille = stock_dim
+    # -------------------------------------------------
+    "action_space": stock_dimension,
+
+
+    # -------------------------------------------------
+    # reward_scaling : facteur d’échelle de la récompense
+    #
+    # La reward brute (PnL) peut être très grande
+    # → instabilité du réseau
+    #
+    # reward_scaling réduit cette amplitude
+    #
+    # Valeurs typiques :
+    # 1e-4 (standard FinRL)
+    # 1e-5 → plus conservateur
+    # -------------------------------------------------
+    "reward_scaling": 1e-4
+}
+

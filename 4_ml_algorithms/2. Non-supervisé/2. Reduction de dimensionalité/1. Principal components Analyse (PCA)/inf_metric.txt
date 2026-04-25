@@ -1,0 +1,152 @@
+Très bonne question 🙌 ! Tu as exécuté beaucoup de graphiques (histogrammes, distributions, boxplots, heatmaps, PCA, etc.), et chacun a une **interprétation spécifique**.
+Je vais t’expliquer **clairement et simplement** ce que chaque type de graphe raconte, pour que tu puisses analyser ton jeu de données.
+
+---
+
+# 🔎 Interprétation des graphes produits
+
+## 1️⃣ Histogrammes (`new_df.hist(...)`)
+
+* **But** : Montrer la répartition des valeurs dans chaque colonne (feature).
+* **Ce qu’on regarde** :
+
+  * Si la distribution est **normale (symétrique)** ou **skewed (asymétrique)**.
+  * Si certaines variables prennent toujours les mêmes valeurs → peu informatives.
+  * Si on observe des **valeurs extrêmes** (très éloignées de la majorité).
+
+👉 Exemple : si un attribut comme `radius_ratio` a beaucoup de valeurs très petites et quelques-unes très grandes → risque d’outliers.
+
+---
+
+## 2️⃣ Distribution plots (`sns.distplot(...)`)
+
+* **But** : Étudier plus finement la forme de la distribution d’une variable.
+* **Ce qu’on regarde** :
+
+  * Si c’est **centré** (valeurs autour d’une moyenne).
+  * Si la courbe est **symétrique** (skewness proche de 0).
+  * Si elle a une **longue queue à gauche ou à droite** → variable skewed.
+* **Impact** : une variable très skewed peut poser problème pour certains modèles et peut nécessiter une transformation (log, normalisation…).
+
+---
+
+## 3️⃣ Boxplots (`sns.boxplot(...)`)
+
+* **But** : Détecter rapidement les **valeurs aberrantes (outliers)**.
+* **Lecture** :
+
+  * La **boîte** = \[Q1, Q3] (50% des valeurs centrales).
+  * La **barre centrale** = la médiane.
+  * Les **points isolés en dehors des moustaches** = outliers.
+* **Impact** : trop d’outliers fausse les moyennes et certains modèles → d’où la suppression par l’IQR.
+
+---
+
+## 4️⃣ Heatmap de corrélation (`sns.heatmap(...)`)
+
+* **But** : Mesurer la corrélation entre les variables (entre -1 et 1).
+* **Lecture** :
+
+  * Couleur proche de **1 (jaune)** = forte corrélation positive (les deux var. évoluent ensemble).
+  * Couleur proche de **-1 (violet foncé)** = forte corrélation négative (l’une monte, l’autre baisse).
+  * **0 (vert)** = pas de lien.
+* **Impact** :
+
+  * Des variables très corrélées entre elles → redondance (PCA va aider à les compresser).
+  * PCA exploite justement ces corrélations pour réduire la dimensionnalité.
+
+---
+
+## 5️⃣ Pairplot (`sns.pairplot(...)`)
+
+* **But** : Visualiser les relations entre chaque paire de variables.
+* **Lecture** :
+
+  * Les **nuages de points** : permettent de voir si deux variables séparent bien les classes.
+  * Les **diagonales KDE (courbes lissées)** : distribution de chaque variable seule.
+* **Impact** :
+
+  * Si on voit que certaines classes (car, bus, van) se regroupent bien sur certains axes → le modèle pourra mieux les séparer.
+  * Si c’est très mélangé → classification plus difficile.
+
+---
+
+## 6️⃣ Variance expliquée par PCA
+
+* **Graphique bar + step (cumulative variance)** :
+
+  * Barres = variance expliquée par chaque composante.
+  * Courbe = variance cumulée.
+* **Lecture** :
+
+  * On regarde combien de composantes principales sont nécessaires pour expliquer **80-90%** de la variance.
+  * Exemple : si les 8 premières composantes expliquent 90%, on peut réduire de 18 dimensions → 8 dimensions **sans trop perdre d’info**.
+
+---
+
+## 7️⃣ Pairplot PCA (`sns.pairplot(reduced_pca)`)
+
+* **But** : Montrer la répartition des données après réduction en 8 dimensions principales.
+* **Lecture** :
+
+  * Chaque axe est une **composante principale** (combinaison linéaire des variables d’origine).
+  * On cherche à voir si les classes (bus, car, van) se regroupent mieux qu’avant.
+* **Impact** :
+
+  * Si on observe des séparations plus claires → PCA a bien aidé à condenser l’information.
+
+---
+
+## 8️⃣ Countplot (`sns.countplot(x='class')`)
+
+* **But** : Voir combien d’exemples par classe.
+* **Lecture** :
+
+  * Hauteur des barres = effectif des classes.
+  * Vérifier si dataset **équilibré** (même nombre de bus, cars, vans) ou déséquilibré (si un groupe est trop petit → problème d’apprentissage).
+
+---
+
+## 9️⃣ Matrices de confusion (`sns.heatmap(confusion_matrix(...))`)
+
+* **But** : Voir comment le modèle classe réellement les véhicules.
+* **Lecture** :
+
+  * Axe Y = vraies classes.
+  * Axe X = classes prédites.
+  * Diagonale = bonnes prédictions.
+  * En dehors de la diagonale = erreurs.
+* **Impact** :
+
+  * Permet de voir **où le modèle se trompe le plus** (ex : confond Van et Bus mais pas Car).
+  * Comparer la matrice avant et après PCA → PCA garde-t-il la capacité discriminante ?
+
+---
+
+## 🔟 Rapport de classification (`classification_report`)
+
+* **But** : Évaluer le modèle par classe.
+* **Métriques** :
+
+  * **Précision (precision)** = parmi ce que le modèle a prédit comme "Bus", combien étaient vraiment des Bus ?
+  * **Rappel (recall)** = parmi les vrais "Bus", combien ont été correctement retrouvés par le modèle ?
+  * **F1-score** = moyenne entre précision et rappel (bon équilibre).
+  * **Support** = nombre d’exemples par classe.
+* **Impact** :
+
+  * Si une classe a un F1-score faible → le modèle a du mal avec elle.
+  * Comparer entre données brutes vs PCA → voir si PCA dégrade ou améliore la performance.
+
+---
+
+✅ En résumé :
+
+* **Histogrammes / Distplots** → Comprendre la répartition des variables.
+* **Boxplots** → Détecter et supprimer les outliers.
+* **Heatmap / Pairplot** → Comprendre les corrélations et séparations possibles.
+* **PCA (variance expliquée)** → Savoir combien de dimensions garder.
+* **Matrices de confusion + rapports** → Mesurer la performance réelle du modèle.
+
+---
+
+👉 Veux-tu que je te fasse un **tableau récapitulatif** (Graphique → But → Ce qu’il faut regarder → Impact) pour que tu aies une fiche simple à relire ?

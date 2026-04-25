@@ -1,0 +1,136 @@
+ğŸ“Œ Explications Ã©tape par Ã©tape
+
+Chargement & prÃ©paration des donnÃ©es
+
+On prend MNIST (28Ã—28 pixels).
+
+On ne garde que les chiffres "1" comme normalitÃ©.
+
+Construction de lâ€™autoencoder
+
+Encoder â†’ rÃ©duit de 784 â†’ 128 â†’ 64 â†’ 32.
+
+Decoder â†’ remonte de 32 â†’ 64 â†’ 128 â†’ 784.
+
+Objectif : reconstruire lâ€™image initiale.
+
+EntraÃ®nement
+
+Sur les "1".
+
+Lâ€™autoencoder apprend Ã  reconstruire parfaitement un "1".
+
+Seuil dâ€™anomalie
+
+On calcule lâ€™erreur de reconstruction (MSE).
+
+Si erreur > seuil â†’ image considÃ©rÃ©e comme anomalie.
+
+RÃ©sultats attendus
+
+Les "1" â†’ bien reconstruits â†’ erreur faible.
+
+Les autres chiffres ("0", "7", etc.) â†’ mal reconstruits â†’ erreur Ã©levÃ©e â†’ dÃ©tectÃ©s comme anomalies.
+
+
+
+Très bonne remarque 👌 tu touches à deux points fondamentaux :
+
+---
+
+## 🔹 1. L’espace latent dans un autoencoder
+
+Oui, l’**encodeur** apprend à transformer l’entrée $x$ (dimension élevée, ex : 784 pour une image 28×28) vers une **représentation comprimée** dans un espace latent (de plus faible dimension).
+
+👉 Dans mon code, la **couche latente** est cette ligne :
+
+```python
+encoded = Dense(32, activation='relu')(encoded)  # couche latente
+```
+
+* Ici, la dimension latente est **32**.
+* Cela veut dire que l’image de 784 pixels est compressée en un vecteur de taille 32.
+* On peut voir ce vecteur comme une **"empreinte numérique" (feature vector)** qui capture les infos importantes.
+
+➡️ Après l’encodeur, on a un **vecteur latent $z$**, puis le **décoder** essaye de reconstruire l’entrée à partir de ce $z$.
+
+Formule :
+
+$$
+z = f_\theta(x) \quad \text{(encodeur)}
+$$
+
+$$
+\hat{x} = g_\phi(z) \quad \text{(decodeur)}
+$$
+
+$$
+\hat{x} \approx x \quad \text{(reconstruction proche de l’original)}
+$$
+
+Donc même si je ne l’ai pas affiché, **l’espace latent est bien là** → c’est la couche intermédiaire de 32 neurones.
+
+---
+
+## 🔹 2. C’est quoi le seuil en détection d’anomalies ?
+
+Un **autoencoder pour anomalies** ne fait pas de classification directe.
+Il utilise l’**erreur de reconstruction** :
+
+$$
+\text{MSE}(x, \hat{x}) = \frac{1}{n} \sum_{i=1}^n (x_i - \hat{x}_i)^2
+$$
+
+* Si $x$ ressemble aux données apprises (par ex. un "1") → erreur faible.
+* Si $x$ est très différent (par ex. un "7") → erreur grande.
+
+👉 Le **seuil** est une valeur qu’on fixe pour dire :
+
+* **Erreur ≤ seuil → normal**
+* **Erreur > seuil → anomalie**
+
+### Comment choisir ce seuil ?
+
+Il existe plusieurs approches :
+
+1. **Basé sur la distribution des erreurs sur le jeu normal**
+
+   * On calcule la moyenne + écart-type :
+
+     $$
+     seuil = \mu + 3\sigma
+     $$
+   * (méthode simple que j’ai utilisée dans le code).
+
+2. **Basé sur un pourcentage (quantile)**
+
+   * Exemple : on prend le **95e percentile** des erreurs des données normales.
+
+3. **Validation croisée**
+
+   * Si on a un petit échantillon étiqueté d’anomalies, on ajuste le seuil pour maximiser la précision/rappel.
+
+---
+
+## 🔹 Exemple concret du seuil
+
+Imaginons qu’on calcule l’erreur de reconstruction (MSE) :
+
+* Données normales (chiffre "1") → erreurs typiques entre **0.001 et 0.02**
+* Données anormales (autres chiffres) → erreurs typiques entre **0.05 et 0.3**
+
+👉 Si je choisis un seuil à **0.04** :
+
+* Tout ce qui est en dessous (ex : 0.01) est **normal**.
+* Tout ce qui est au-dessus (ex : 0.1) est **anormal**.
+
+---
+
+✅ En résumé :
+
+* L’**espace latent** = couche cachée comprimée (ici taille 32).
+* Le **seuil** = une limite fixée sur l’erreur de reconstruction pour séparer normal/anomalie.
+
+---
+
+Veux-tu que je t’ajoute une **visualisation de l’espace latent** (par ex. en 2D avec t-SNE ou PCA) pour montrer comment les normales et anomalies se séparent ?

@@ -1,0 +1,19 @@
+Pourquoi mélanger CNN et RNN ?
+
+CNN = excellent pour features spatiales locales (coins, lignes, textures).
+
+RNN = apprend la séquence verticale de pixels → peut détecter des motifs que CNN pourrait manquer.
+
+Comment ils s’améliorent mutuellement ?
+
+Chaque modèle fournit ses pseudo-labels confiants à l’autre.
+
+Exemple : RNN est sûr sur certaines lettres/chiffres difficiles pour CNN → CNN reçoit ces exemples pour apprendre de nouvelles variations.
+
+Cela crée une coopération et un pool étiqueté plus riche et diversifié.
+
+Self-training vs Co-training :
+
+Self-training = un modèle seul apprend de ses propres prédictions.
+
+Co-training = deux modèles avec vues différentes → échanges de connaissances → souvent meilleure généralisation.

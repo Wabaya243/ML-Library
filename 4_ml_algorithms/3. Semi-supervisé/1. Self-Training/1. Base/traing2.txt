@@ -1,0 +1,124 @@
+Parfait Divin 😎, voici un résumé clair et complet de ton code et de tout ce qu’on a discuté récemment, que tu peux mettre directement dans un fichier texte :
+
+---
+
+## **Résumé du laboratoire Self-Training sur le dataset Wine**
+
+### 1️⃣ Chargement du dataset
+
+* On utilise le dataset **Wine** de `sklearn`.
+* `X` → features (13 variables).
+* `y` → classes (3 types de vin).
+* Affichage des noms des features et des classes pour information.
+
+---
+
+### 2️⃣ Création d’un scénario semi-supervisé
+
+* On masque aléatoirement **70% des labels** pour simuler un dataset semi-étiqueté :
+
+```python
+y_semi = y.copy()
+mask = rng.rand(len(y)) < 0.7
+y_semi[mask] = -1
+```
+
+* `-1` représente un label **non étiqueté**.
+* Cela permet de tester la capacité du Self-Training à **réétiqueter les données manquantes**.
+
+---
+
+### 3️⃣ Préparation des données
+
+* Division en **train/test** avec `train_test_split`.
+* Standardisation des features avec `StandardScaler`.
+* À noter : `y_train` et `y_test` contiennent encore certains `-1`.
+
+---
+
+### 4️⃣ Self-Training Classifier
+
+* On utilise un **RandomForest** comme classifieur de base.
+
+* Paramètres clés :
+
+  * `criterion='threshold'` → on n’ajoute au training set que les prédictions avec **confiance ≥ threshold**.
+  * `threshold=0.9` → confiance minimale de 90%.
+  * `max_iter=20` → nombre maximal d’itérations de propagation.
+
+* **Fonctionnement :**
+
+  1. Le modèle s’entraîne sur les labels connus (`y != -1`).
+  2. Il prédit sur les données non étiquetées (`y == -1`).
+  3. Les prédictions avec confiance ≥ 0.9 sont **ajoutées au jeu d’entraînement** interne.
+  4. Le processus se répète jusqu’à ce que plus aucun label ne puisse être ajouté ou que `max_iter` soit atteint.
+
+* `self_training_model.transduction_` → tableau contenant **tous les labels finaux**, y compris :
+
+  * Labels originaux connus.
+  * Labels nouvellement attribués.
+  * Les données encore trop ambiguës peuvent rester `-1`.
+
+---
+
+### 5️⃣ Visualisation des labels ajoutés
+
+```python
+added_indices = np.where((y_train == -1) & (self_training_model.transduction_ != -1))[0]
+```
+
+* Permet de voir **quels échantillons non étiquetés initialement ont été ajoutés**.
+* Important : `added_counts` ou `transduction_` contient **tout le dataset final**, pas seulement les nouveaux labels.
+
+💡 **Remarque :** certaines données peuvent rester non étiquetées (`-1`) à cause :
+
+1. Du seuil de confiance trop élevé.
+2. De la complexité ou proximité des classes.
+3. Du nombre d’itérations limité (`max_iter`).
+
+---
+
+### 6️⃣ Évaluation du modèle
+
+* On évalue uniquement sur les **échantillons dont `y_test != -1`**, car les `-1` ne peuvent pas être comparés aux prédictions.
+
+```python
+y_pred = self_training_model.predict(X_test[y_test != -1])
+```
+
+* Métriques utilisées : **accuracy**, **f1-score**, **classification report**, **matrice de confusion**.
+
+---
+
+### 7️⃣ Test sur nouvelles données
+
+* On peut prédire la classe de **nouvelles observations** après entraînement :
+
+```python
+predictions = self_training_model.predict(new_data_scaled)
+```
+
+* Affiche les **classes prédites** pour ces nouvelles données.
+
+---
+
+### 8️⃣ Points importants à retenir
+
+1. **Self-Training ajoute des labels avec confiance** mais n’étiquette pas tout si certaines données restent ambiguës.
+2. `transduction_` → le **dataset final complet** contenant :
+
+   * Labels originaux connus.
+   * Labels nouvellement ajoutés.
+   * Éventuels `-1` restants.
+3. Pour l’évaluation, il faut **ignorer les `-1` dans y\_test**.
+4. On peut forcer l’étiquetage complet en :
+
+   * Baissant le `threshold`.
+   * Réentraîner sur les labels ajoutés.
+   * Assignant la prédiction finale aux derniers `-1` si besoin.
+
+---
+
+Si tu veux, je peux aussi te faire une **version graphique et itération par itération**, pour que ton fichier texte ait **des visuels montrant comment les labels sont ajoutés** pendant le Self-Training.
+
+Veux que je fasse ça ?

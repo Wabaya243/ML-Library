@@ -1,0 +1,107 @@
+Oui, bien sûr Divin 😎 ! Voici un **résumé complet et pédagogique** pour ton laboratoire Self-Training sur le dataset **Iris**, basé sur ton code et les points importants qu’on a discutés pour le Wine. Tu peux le mettre directement dans un fichier texte :
+
+---
+
+## **Résumé du laboratoire Self-Training sur le dataset Iris**
+
+### 1️⃣ Chargement du dataset
+
+* On utilise le dataset **Iris** de `sklearn`.
+* `X` → features (4 variables : longueur/sépal et pétale).
+* `y` → classes (3 espèces : Setosa, Versicolor, Virginica).
+* Affichage des **features** et des **classes** pour information.
+
+---
+
+### 2️⃣ Création d’un scénario semi-supervisé
+
+* On crée un dataset semi-étiqueté :
+
+```python
+y_semi = y.copy()
+mask = rng.rand(len(y)) < 0.7
+y_semi[mask] = -1
+```
+
+* **70% des labels sont masqués** (`-1`) pour simuler des données non étiquetées.
+* Cela permet de tester la capacité du Self-Training à **réétiqueter les données manquantes**.
+
+---
+
+### 3️⃣ Préparation des données
+
+* Division en **train/test** avec `train_test_split`.
+* Standardisation des features avec `StandardScaler`.
+* Important : `y_train` et `y_test` contiennent encore certains `-1`.
+
+---
+
+### 4️⃣ Self-Training Classifier
+
+* On utilise **LogisticRegression** comme classifieur de base.
+
+* Paramètres du Self-Training :
+
+  * `criterion='k_best'` → le modèle ajoute **les k meilleures prédictions** à chaque itération.
+  * `k_best=50` → 50 échantillons ajoutés par itération.
+  * `max_iter=10` → nombre maximal d’itérations de propagation.
+
+* **Fonctionnement :**
+
+  1. Le modèle s’entraîne sur les labels connus (`y != -1`).
+  2. Il prédit sur les données non étiquetées.
+  3. Les **k prédictions les plus confiantes** sont ajoutées au training set interne.
+  4. Le processus se répète jusqu’à `max_iter` ou plus aucun ajout possible.
+
+* `self_training_model.transduction_` contient **tous les labels finaux** :
+
+  * Labels originaux connus.
+  * Labels nouvellement attribués.
+  * Éventuels `-1` restants pour les données trop ambiguës.
+
+---
+
+### 5️⃣ Évaluation du modèle
+
+* On ne peut évaluer que sur les échantillons dont `y_test != -1`.
+* Métriques utilisées : **matrice de confusion**, **classification report**.
+* Exemple :
+
+```python
+cm = confusion_matrix(y_test[y_test != -1], y_pred[y_test != -1])
+```
+
+* Pourquoi `y_test != -1` ?
+
+  * Les `-1` représentent des labels inconnus, donc **impossible de comparer aux prédictions**.
+
+---
+
+### 6️⃣ Test sur nouvelles données
+
+* On peut prédire la classe de **nouvelles observations** après entraînement :
+
+```python
+predictions = self_training_model.predict(new_data_scaled)
+```
+
+* Affiche les **classes prédites** pour ces nouvelles données.
+
+---
+
+### 7️⃣ Points importants
+
+1. **Self-Training ajoute des labels avec confiance**, mais certaines données peuvent rester `-1`.
+2. `transduction_` → contient le **dataset final complet** avec labels originaux + nouveaux labels.
+3. Les évaluations ne prennent en compte que les labels connus pour calculer les métriques.
+4. Pour obtenir un dataset **totalement étiqueté**, on peut :
+
+   * Baisser le seuil de confiance (ou augmenter `k_best`).
+   * Réentraîner le modèle sur les labels ajoutés.
+   * Assigner la prédiction finale aux derniers `-1`.
+
+---
+
+Si tu veux, je peux te faire **une version visuelle et itération par itération** pour le Iris, comme on a discuté pour Wine, pour montrer **comment les labels sont ajoutés à chaque étape du Self-Training**.
+
+Veux que je fasse ça ?

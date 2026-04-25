@@ -1,0 +1,64 @@
+Très bonne question 🙌
+Ton intuition est juste : **cet autoencodeur n’a pas changé la taille du bottleneck** (il garde **100 neurones → même dimension que l’entrée**). Donc, **il n’y a pas de vraie compression**.
+
+👉 Alors pourquoi il arrive quand même à améliorer la précision (ex. passer de 89 % → 93 %) quand on l’utilise avant la régression logistique ?
+
+---
+
+## 1. Ce que fait vraiment cet autoencodeur
+
+Même sans compresser, il agit comme une **transformation non linéaire des données** :
+
+* Les couches cachées avec **Dense + BatchNorm + LeakyReLU** transforment les features originales.
+* Cela revient à créer une **nouvelle représentation des données**, parfois plus "propre" et plus adaptée pour la tâche de classification.
+* Comme les données initiales ont beaucoup de redondance (90 features redondantes sur 100), l’autoencodeur apprend à reconstruire en **réduisant le bruit et les corrélations inutiles**.
+
+En résumé :
+➡️ Même si le bottleneck est de même taille, la sortie du bottleneck est une **version filtrée/normalisée des données**.
+
+---
+
+## 2. Pourquoi la précision augmente ?
+
+1. **Nettoyage du bruit et des redondances**
+
+   * L’autoencodeur apprend à reconstruire les features les plus "cohérentes".
+   * Les variables peu utiles ou bruitées sont "lissées" → la régression logistique reçoit une version plus claire du dataset.
+
+2. **Transformation non linéaire**
+
+   * La régression logistique est **linéaire** → elle ne capture pas bien les relations complexes.
+   * L’autoencodeur, via LeakyReLU + Dense, introduit de la **non-linéarité**.
+   * Ça revient à un **feature engineering automatique** : créer des variables intermédiaires plus pertinentes.
+
+3. **Batch Normalization**
+
+   * Stabilise et standardise les activations dans le réseau.
+   * Produit des données avec de meilleures distributions (centrées, échelles similaires).
+   * La régression logistique converge donc mieux.
+
+---
+
+## 3. Analogie simple
+
+Imagine que tes données originales soient comme un **texte mal écrit avec beaucoup de fautes**.
+
+* La régression logistique lit ce texte tel quel → elle comprend en partie, mais pas parfaitement → 89 %.
+* L’autoencodeur agit comme un **correcteur automatique** : il réécrit le texte sans les fautes, même s’il garde la même longueur → la régression logistique comprend mieux → 93 %.
+
+---
+
+## 4. En résumé
+
+➡️ Cet autoencodeur **n’a pas comprimé**, mais il a :
+
+* filtré les redondances,
+* réorganisé les features,
+* rendu l’espace de représentation plus "facile" pour un modèle linéaire.
+
+👉 C’est pour ça qu’il améliore la précision.
+On pourrait dire que c’est une **forme de prétraitement non linéaire supervisé par la reconstruction**.
+
+---
+
+Veux-tu que je te fasse un **schéma comparatif** (entrée brute → autoencodeur → bottleneck → régression logistique) pour bien visualiser où se fait le "nettoyage" des données ?

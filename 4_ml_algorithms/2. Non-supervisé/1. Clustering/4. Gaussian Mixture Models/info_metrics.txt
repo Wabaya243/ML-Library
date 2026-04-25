@@ -1,0 +1,29 @@
+Silhouette Score
+
+Mesure la compacité et la séparation des clusters.
+
+Valeurs entre -1 et 1.
+
+Plus proche de 1 = clusters bien séparés, proche de 0 = clusters qui se chevauchent, négatif = mauvais clustering.
+👉 Choisir le nombre de clusters avec le plus haut score moyen.
+
+Distance entre GMMs (Jensen-Shannon)
+
+Mesure la stabilité du modèle entre train/test.
+
+Plus la distance est faible, plus le modèle est stable et généralisable.
+👉 Bon nombre de clusters = là où la distance est minimale.
+
+BIC (Bayesian Information Criterion)
+
+Mesure un compromis entre qualité d’ajustement et complexité du modèle.
+
+Plus le BIC est bas, meilleur est le modèle.
+
+On regarde aussi le gradient du BIC : une chute importante indique un bon choix de cluster.
+👉 Choisir le nombre de clusters où le BIC est minimum ou où son gradient change fortement.
+
+
+⚖️ Conclusion pratique :
+On compare Silhouette, Distance GMM, et BIC.
+Si tous pointent vers le même nombre de clusters (ex : 3 ou 4), alors c’est le meilleur choix de segmentation.

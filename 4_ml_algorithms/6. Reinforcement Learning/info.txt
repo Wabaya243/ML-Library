@@ -1,0 +1,100 @@
+Conseils pour apprendre étape par étape
+
+Commence par Q-Learning et REINFORCE → petits environnements simples.
+
+Ensuite DQN et Actor-Critic → environnements continus ou images simples.
+
+Puis Conv-DQN → input image, plus proche des jeux Atari.
+
+Ensuite A3C, PPO, SAC → méthodes avancées et parallèles.
+
+
+
+==============================
+Reinforcement Learning Overview
+==============================
+
+1️⃣ Value-Based Methods
+-----------------------
+01_Q_Learning
+Type : Value-Based
+Environnement : petits espaces discrets (ex : GridWorld)
+Input : vecteur discret / tableau d’états
+Apprend : bases du Q-Learning, estimation des Q-values, exploration vs exploitation
+
+02_Deep_Q_Network (DQN)
+Type : Value-Based
+Environnement : états continus ou images simples (ex : CartPole, Atari)
+Input : vecteur continu ou image flatten
+Apprend : approximation de Q(s,a) avec réseau de neurones, stabilité de l’apprentissage
+
+03_Convolutional_DQN (Conv-DQN)
+Type : Value-Based
+Environnement : jeux basés sur images (ex : Atari Breakout)
+Input : image
+Apprend : extraction automatique de features avec CNN + Q-Learning, jouer à partir d’images
+
+2️⃣ Policy-Based Methods
+-----------------------
+04_REINFORCE
+Type : Policy-Based
+Environnement : petits environnements (ex : CartPole)
+Input : vecteur continu ou discret
+Apprend : politique stochastique, gradient policy, exploration
+
+05_Actor_Critic
+Type : Policy-Based
+Environnement : MountainCar, CartPole
+Input : vecteur continu
+Apprend : combinaison Actor (policy) + Critic (value), meilleure stabilité que REINFORCE
+
+3️⃣ Asynchronous / Parallel Methods
+-----------------------------------
+06_A3C
+Type : Policy-Based Asynchrone
+Environnement : CartPole, Pong
+Input : vecteur ou image
+Apprend : parallélisation avec multi-agents, calcul d’Advantage, apprentissage plus rapide et stable
+
+4️⃣ Advanced / Continuous Action Methods
+----------------------------------------
+07_DDPG
+Type : Actor-Critic pour actions continues
+Environnement : Pendulum, Mujoco
+Input : vecteur continu
+Apprend : policy gradient pour actions continues, exploration et exploitation
+
+08_PPO
+Type : Actor-Critic amélioré
+Environnement : Mujoco, Robotic control
+Input : vecteur continu
+Apprend : politique stable, optimisation proximal, mise à jour contrôlée
+
+09_SAC
+Type : Actor-Critic stochastique
+Environnement : Mujoco
+Input : vecteur continu
+Apprend : exploration stochastique, régularisation entropique, robustesse et stabilité
+
+5️⃣ Autres variantes
+--------------------
+10_Dueling_DQN
+Type : Value-Based
+Environnement : CartPole, Atari
+Input : vecteur ou image
+Apprend : séparation état / avantage pour meilleure estimation Q(s,a)
+
+11_Prioritized_Experience_Replay
+Type : Value-Based
+Environnement : DQN sur CartPole / Atari
+Input : vecteur ou image
+Apprend : replay buffer priorisé, apprend plus vite sur transitions importantes
+
+==============================
+Conseil général
+==============================
+- Commencer par les Value-Based simples (Q-Learning, DQN)
+- Ensuite Policy-Based (REINFORCE, Actor-Critic)
+- Puis Asynchronous (A3C) et méthodes avancées (PPO, SAC)
+- Noter les performances et cocher ce que tu as testé
+- Garder le fichier comme “carte mentale” pour suivre ton apprentissage

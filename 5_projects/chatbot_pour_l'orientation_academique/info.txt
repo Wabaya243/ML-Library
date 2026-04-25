@@ -1,0 +1,31 @@
+D'autres model exploitable sont 
+
+Falcon Mamba instruct = Falcon, c’est un moteur diesel : fiable, mais sans âme. DeepSeek, c’est un moteur électrique boosté : un peu capricieux, mais ça décolle.
+Tu gagnes plus à investir ton temps à raffiner ton DeepSeek LoRA long-contexte qu’à faire un entraînement parallèle sur Falcon. Pour un chat public simple, rapide, “safe” et sans dérive → Falcon, oui, mais tu perds la profondeur.
+
+OpemLLM France Claire = Ah, Claire — le petit bijou national des labs français d’OpenLLM. Très bien entraînée, très polie, mais un peu comme une fonctionnaire modèle : elle ne dépasse jamais la consigne, et elle s’excuse même quand ce n’est pas sa faute.
+parfaite pour un chatbot institutionnel (site d’université, CAF, mairie, service d’info).
+
+YI 1.5 = Yi est une machine à produire du texte propre, bon pour résumer, traduire, reformuler, présentateur télé, Rapide, car modèle plus “sec”
+
+Llama 3 = efficace, propre, calibré pour le support client, les Q&A et les chatbots commerciaux, avocat corporate, Si tu veux juste un bot qui récite vite et propre : Llama 3 8B suffira.
+raisonnement Correct, mais souvent superficiel ou linéaire
+
+DeepSeek = “Je t’écoute, je comprends ton problème, voici une réponse humaine et utile.”
+
+DeepThink = “Analysons ton problème pas à pas pour trouver la conclusion la plus logique.”, cerveau + tableau blanc., style professeur logique et non emotionnel
+Si tu veux un modèle qui explique les raisonnements et décompose les problèmes, DeepThink est utile pour un mode “analyse avancée” — par exemple, un module “Justifie ta décision” dans ton app.
+
+
+Qwen 2.5 est ton modèle “fondation stable” : rapide, clair, sans débordement.
+
+DeepSeek-R1 est son clone entraîné à réfléchir et parler comme un humain cultivé.
+
+Tu veux un agent qui comprend les émotions et les dilemmes, pas un bot administratif.
+→ DeepSeek gagne.
+
+Tu veux une base propre à adapter à d’autres LoRA plus neutres (finance, droit, tech).
+→ Qwen 2.5 est parfait comme socle.
+
+Qwen 2.5 = cerveau bien rangé.
+DeepSeek R1 = même cerveau, mais avec une âme.

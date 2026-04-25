@@ -1,0 +1,24 @@
+3. Explication rapide
+
+Latent space : dimension 5 → chaque transaction est compressée en un vecteur de 5 valeurs.
+
+Seuil : basé sur la moyenne + 3σ des erreurs des normales.
+
+Résultat attendu :
+
+Les transactions normales → erreurs petites, en dessous du seuil.
+
+Les fraudes → erreurs beaucoup plus grandes → au-dessus du seuil.
+
+Le graphique final montre deux courbes :
+
+Une distribution d’erreurs pour les normales (pic à gauche).
+
+Une distribution d’erreurs pour les fraudes (pic plus à droite).
+
+Le seuil rouge sépare les deux → il sert de frontière de détection.
+
+👉 Cet exemple montre que l’autoencoder ne sert pas qu’aux images.
+Il est très utilisé dans la cybersécurité, la finance, les réseaux industriels pour détecter des comportements anormaux.
+
+Veux-tu que je te prépare un schéma visuel simplifié (autoencoder → espace latent → reconstruction → comparaison → anomalie oui/non) pour bien résumer le pipeline ?
