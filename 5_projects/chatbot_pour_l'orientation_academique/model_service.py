@@ -1,19 +1,3 @@
-"""
-Service de modèle pour DeepSeek-R1-Distill-Qwen-7B + LoRA (UNIKIN Advisor),
-avec génération non-streaming et streaming via TextIteratorStreamer.
-
-Par défaut, on charge le modèle de base "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-et on applique l'adapter LoRA local (adapter_path) — par défaut le dossier
-"deepseek-qwen7b-unikin-lora-final2" situé au même niveau que main.py.
-
-Prérequis conda/pip:
-  pip install torch transformers peft bitsandbytes
-  (CUDA recommandé pour des performances correctes)
-
-Variables d'environnement (optionnelles):
-  MODEL_ADAPTER_PATH : chemin absolu vers le dossier LoRA
-  MODEL_LOAD_4BIT    : "1"/"true" pour activer 4-bit (défaut: 1), sinon "0"
-"""
 
 
 from __future__ import annotations  # permet d'annoter des types avec des classes définies plus bas
@@ -45,14 +29,14 @@ class ModelService:
 
     def __init__(
         self,
-        base_model: str = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",  # nom du modèle de base
+        base_model: str = "Qwen/Qwen2.5-7B-Instruct",
         adapter_path: Optional[str] = None,                           # chemin vers l'adapter LoRA
         load_4bit: Optional[bool] = None,                             # activer ou non la quantification 4-bit
     ) -> None:
         # Détermine le dossier projet (emplacement de ce fichier)
         proj_dir = os.path.abspath(os.path.dirname(__file__))
-        # Adapter par défaut : dossier "deepseek-qwen7b-unikin-lora-final2" à côté du code
-        default_adapter = os.path.join(proj_dir, "deepseek-qwen7b-unikin-lora-final")
+        # Adapter par défaut : dossier "mistral-7b-unikin-lora" à côté du code
+        default_adapter = os.path.join(proj_dir, "qwen2.5-7b-unikin-lora")
         # Variables d’environnement optionnelles (permet de surcharger sans modifier le code)
         env_adapter = os.getenv("MODEL_ADAPTER_PATH")
         env_load4 = os.getenv("MODEL_LOAD_4BIT")
@@ -142,7 +126,7 @@ class ModelService:
             active = None
 
         log.info("PEFT adapters: %s | actif: %s", peft_keys, active)
-        log.info("Modèle DeepSeek LoRA chargé et prêt.")
+        log.info("Modèle et adapter LoRA chargés et prêts.")
 
     def _build_prompt(self, messages: List[Dict[str, str]]) -> str:
         """Construit le prompt selon le chat template Qwen/DeepSeek si dispo, sinon fallback simple."""
@@ -166,14 +150,17 @@ class ModelService:
         """Génération non-streaming : renvoie tout le texte d’un coup (nettoie <END>)."""
         prompt = self._build_prompt(messages)                 # construit prompt
         inputs = self.tok(prompt, return_tensors="pt").to(self.mdl.device)  # encode et envoie au device
-        eos_ids = [self.tok.eos_token_id]                    # EOS par défaut
-        # Essaie d’ajouter l’ID du token spécial <END> si présent dans le vocab
-        try:
-            end_id = self.tok.convert_tokens_to_ids("<END>")
-            if isinstance(end_id, int) and end_id > 0:
-                eos_ids.append(end_id)
-        except Exception:
-            pass
+        # À mettre dans generate() et stream() à la place des multiples try/except :
+        eos_ids = [self.tok.eos_token_id]
+        tokens_speciaux_arret = ["<END>", "<|im_end|>", "<|eot_id|>", "<|end|>", "<|endoftext|>", "<eot_id>"]
+
+        for token in tokens_speciaux_arret:
+            try:
+                t_id = self.tok.convert_tokens_to_ids(token)
+                if isinstance(t_id, int) and t_id > 0:
+                    eos_ids.append(t_id)
+            except Exception:
+                pass
 
         # Hyperparamètres par défaut raisonnables (peuvent être surchargés via gen_kwargs)
         defaults = dict(
@@ -202,13 +189,17 @@ class ModelService:
         """Génération streaming : yield des segments de texte (pour SSE côté API)."""
         prompt = self._build_prompt(messages)
         inputs = self.tok(prompt, return_tensors="pt").to(self.mdl.device)
+        # À mettre dans generate() et stream() à la place des multiples try/except :
         eos_ids = [self.tok.eos_token_id]
-        try:
-            end_id = self.tok.convert_tokens_to_ids("<END>")
-            if isinstance(end_id, int) and end_id > 0:
-                eos_ids.append(end_id)
-        except Exception:
-            pass
+        tokens_speciaux_arret = ["<END>", "<|im_end|>", "<|eot_id|>", "<|end|>", "<|endoftext|>", "<eot_id>"]
+
+        for token in tokens_speciaux_arret:
+            try:
+                t_id = self.tok.convert_tokens_to_ids(token)
+                if isinstance(t_id, int) and t_id > 0:
+                    eos_ids.append(t_id)
+            except Exception:
+                pass
 
         # Streamer HF : gère le buffering et renvoie des morceaux de texte au fil de l’eau
         streamer = TextIteratorStreamer(self.tok, skip_prompt=True, skip_special_tokens=True)
@@ -235,6 +226,9 @@ class ModelService:
 
         # Boucle consommateur : on itère sur le streamer et on yield chaque fragment
         for text in streamer:
+            if "<END>" in text:
+                yield text.split("<END>")[0]
+                break  # On coupe le stream immédiatement
             yield text
 
     def info(self) -> Dict[str, Any]:
@@ -267,6 +261,44 @@ class ModelService:
 # -------------------------
 # Commentaires explicites
 # -------------------------
+
+
+# ==============================================================================
+# GUIDE DE CONFIGURATION DES CHAT TEMPLATES ET TOKENS EOS PAR ARCHITECTURE
+# ==============================================================================
+# Si vous changez de BASE_MODEL, voici les correspondances natives à connaître :
+#
+# 1) Qwen (Qwen2.5-7B-Instruct)
+#    - Template : ChatML (géré nativement par le tokenizer)
+#    - EOS Natif : "<|im_end|>" et "<|im_start|>"
+#    - Note : Très standard, le bloc try/except de votre code attrape bien "<|im_end|>".
+#
+# 2) Llama 3 / 3.1 (Llama-3.1-8B-Instruct)
+#    - Template : Llama 3 Prompt Format
+#    - EOS Natif : "<|eot_id|>"
+#    - Code à ajuster si besoin : Ajouter 'self.tok.convert_tokens_to_ids("<|eot_id|>")'
+#      dans la liste des eos_ids de generate() et stream().
+#
+# 3) Mistral v0.3 (Mistral-7B-Instruct-v0.3)
+#    - Template : Format Tekken / [INST] (v3 supporte nativement apply_chat_template)
+#    - EOS Natif : "</s>" (qui correspond généralement à self.tok.eos_token_id)
+#
+# 4) Lucie 7B (Lucie-7B-Instruct-v1.1)
+#    - Template : Basé sur l'architecture Mistral/Llama (généralement format [INST] ou ChatML)
+#    - EOS Natif : "</s>" ou "<|end_of_text|>" selon la version exacte de base.
+#
+# 5) Phi-4 (Phi-4-mini-instruct)
+#    - Template : Format spécifique Microsoft (apply_chat_template fortement recommandé)
+#    - EOS Natif : "<|end|>" ou "<|user|>" / "<|assistant|>" pour marquer les tours.
+# 6) Genma 4b (Genma-4b-Instruct)
+#    - Template : Format spécifique Genma (apply_chat_template fortement recommandé)
+#    - EOS Natif :Utilise <|im_end|> (dans ses versions ChatML récentes) ou <eot_id> / <|endoftext|>.
+# 7) Falcon 7b 
+#    - Falcon (TII) : Utilise <|endoftext|> de manière très classique.
+
+# ==============================================================================
+
+
 # Étapes de chargement (_load):
 # 1) Tokenizer: depuis l'adapter si présent, sinon depuis le modèle de base.
 #    - On définit pad_token si absent.

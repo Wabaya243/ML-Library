@@ -51,20 +51,31 @@ app = FastAPI(title="Academia Chat API", version="0.1.0")
 # ---------------------------------------------------------
 # CHARGEMENT DU MODÈLE AU DÉMARRAGE DU SERVEUR
 # ---------------------------------------------------------
+nom_model = "Mistral UNIKIN"
+
+
 @app.on_event("startup")
 async def load_model_on_startup():
-    """Charge le modèle DeepSeek LoRA dès le démarrage du serveur."""
+    print(f"""Charge le modèle dès le démarrage du serveur.""")
     try:
-        print(" Chargement du modèle DeepSeek UNIKIN en mémoire...")
-        _ = ModelService.instance()  # initialise le modèle une seule fois
+        nom_model = "Mistral UNIKIN"
+        print(f" Chargement du modèle {nom_model} en mémoire...")
+        _ = ModelService.instance()
         
-        print("""
+        other_agent_info = {
+            "nom_model": nom_model
+        }
+        
+        print(f"""
         Lancement du serveur Academia Chat API
         -----------------------------------------
-        Base model : DeepSeek-R1-Distill-Qwen-7B
+        Base model : {nom_model}
         Adapter    : UNIKIN LoRA
         Mode       : 4-bit quantized
-        -----------------------------------------  """)
+        -----------------------------------------
+        Informations pour l'autre agent :
+        {other_agent_info}
+        """)
     except Exception as e:
         print(f" Erreur de chargement du modèle au démarrage : {e}")
 

@@ -1,0 +1,2 @@
+cd "C:\Users\cocog\Documents\Cours I.A (Machine Learning)\5. Projet\chatbot_pour_l'orientation_academique\backend>"
+python -m uvicorn app:app --host 127.0.0.1 --port 8001 --reload

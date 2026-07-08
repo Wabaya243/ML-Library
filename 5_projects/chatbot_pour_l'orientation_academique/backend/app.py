@@ -1,4 +1,4 @@
-"""
+r"""
 Backend FastAPI simple pour authentifier un utilisateur sur PostgreSQL.
 
 Routes exposées:
@@ -8,8 +8,7 @@ Routes exposées:
 ATTENTION: ce code lit des mots de passe en clair (colonne mdp). En production,
 il faut stocker des mots de passe hachés (bcrypt/argon2) et comparer avec un hash.
 
-cd "C:\Users\OMEN\Documents\Cours I.A (Machine Learning)\5. Projet\chatbot_pour_l'orientation_academique\backend>"
-python -m uvicorn app:app --host 127.0.0.1 --port 8001 --reload
+
 """
 
 from __future__ import annotations
