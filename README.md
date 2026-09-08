@@ -161,5 +161,5 @@ Ce dépôt est à la fois une **bibliothèque personnelle de connaissances**, un
 
 ## 👤 Auteur
 
-**Kambale Divin** — [@Wabaya243](https://github.com/Wabaya243)
+**THEYTHEY Kambale Divin** — [@Wabaya243](https://github.com/Wabaya243)
 Master 1 Informatique, Université de Kinshasa (UNIKIN)
