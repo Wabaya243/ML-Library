@@ -1,145 +1,10 @@
 # 🤖 ML-Library
 
-> A personal Machine Learning and Artificial Intelligence learning repository.
+> A personal Machine Learning & Artificial Intelligence learning library.
 
-Bienvenue sur **ML-Library**, mon dépôt personnel dédié à l'étude, à l'implémentation et à l'expérimentation en **Machine Learning et Intelligence Artificielle**.
+Dépôt personnel dédié à l'étude, l'implémentation et l'expérimentation en **Machine Learning** et **Intelligence Artificielle**.
 
-Ce repository retrace mon parcours d'apprentissage à travers des **implémentations, notebooks, expériences, algorithmes et projets**, depuis les fondamentaux du Machine Learning jusqu'aux approches modernes de Deep Learning, Generative AI et Reinforcement Learning.
-
----
-
-## 📚 Contenu du repository
-
-Le repository est organisé selon une progression allant des fondamentaux du Machine Learning vers des concepts de plus en plus avancés.
-
-### 0️⃣ Introduction to Machine Learning
-
-Notions fondamentales du Machine Learning :
-
-- Data Preprocessing
-- Linear Regression
-- Multiple Linear Regression
-- Polynomial Regression
-- Logistic Regression
-- Support Vector Machine (SVM)
-- Kernel SVM
-- K-Means
-- Classification
-- Clustering
-- Feature Scaling
-- Model Evaluation
-
----
-
-### 1️⃣ Python for Machine Learning
-
-Implémentations et exercices réalisés avec Python :
-
-- NumPy
-- Pandas
-- Matplotlib
-- Data preprocessing
-- Data visualization
-- Regression
-- Classification
-- Machine Learning workflows
-- Jupyter Notebooks
-
----
-
-### 2️⃣ Deep Learning
-
-Étude et implémentation des fondamentaux du Deep Learning :
-
-- Artificial Neural Networks
-- MLP
-- Forward Propagation
-- Backpropagation
-- Gradient Descent
-- CNN
-
----
-
-### 3️⃣ AI Engineering
-
-Exploration des techniques permettant de transformer les modèles d'IA en applications concrètes :
-
-- Natural Language Processing
-- Transformers
-- Large Language Models
-- Model inference
-- AI applications
-- APIs
-- RAG
-- AI agents
-
----
-
-### 4️⃣ Machine Learning Algorithms
-
-Cette section constitue le parcours principal d'implémentation du repository.
-
-Elle couvre progressivement les différentes familles d'approches en Machine Learning et Intelligence Artificielle :
-
-### Supervised Learning
-
-- Regression
-- Classification
-- Ensemble Learning
-
-### Unsupervised Learning
-
-- Clustering
-- Dimensionality Reduction
-
-### Semi-Supervised Learning
-
-- Self-Training
-- Co-Training
-- Graph-Based Semi-Supervised Learning
-
-### Anomaly Detection
-
-- Anomaly Detection techniques
-
-### Deep Learning
-
-- MLP
-- Convolutional Neural Networks
-- Recurrent Neural Networks
-- Transformers
-- Variational Autoencoders
-- GAN
-- Diffusion Models
-
-### Reinforcement Learning
-
-- Value-Based Methods
-- Policy-Based Methods
-- Actor-Critic
-- Reinforcement Learning algorithms and experiments
-
----
-
-### 5️⃣ Projects
-
-Projets personnels permettant de mettre en pratique les connaissances acquises dans les différentes parties du repository.
-
-Les projets peuvent couvrir :
-
-- Machine Learning
-- Deep Learning
-- Natural Language Processing
-- Computer Vision
-- Generative AI
-- Reinforcement Learning
-- AI Engineering
-
----
-
-## 🛠️ Technologies
-
-Les principales technologies utilisées dans ce repository :
+Ce repository n'est pas une roadmap de choses à apprendre : c'est la **trace structurée de ce que j'ai étudié et implémenté**, des fondamentaux du ML jusqu'au Deep Learning, aux modèles génératifs, au Reinforcement Learning et à la mise en application (AI Engineering).
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
@@ -149,21 +14,106 @@ Les principales technologies utilisées dans ce repository :
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 
-### Frameworks
+---
 
-La majorité des implémentations de Deep Learning réalisées dans les premières parties du repository utilisent **TensorFlow**.
+## 📂 Structure du dépôt
 
-**PyTorch** a ensuite été introduit dans les parties plus avancées, notamment lors de l'étude du **Reinforcement Learning**.
+```text
+ML-Library/
+├── 0_intro_ml/          Fondamentaux du Machine Learning
+├── 1_python_ml/         Python appliqué au ML (NumPy, Pandas, Matplotlib)
+├── 2_deep_learning/     Bases des réseaux de neurones
+├── 3_ai_engineering/    ML avancé + Deep Learning appliqué (21 modules)
+├── 4_ml_algorithms/     Parcours principal d'implémentation par famille d'algorithmes
+└── 5_projects/          Projets de bout en bout
+```
 
 ---
 
-## 🎯 Objective
+## 📚 Contenu détaillé
 
-L'objectif de ce repository est de documenter et de centraliser mon parcours dans le domaine du :
+### 0️⃣ [`0_intro_ml`](./0_intro_ml) — Introduction to Machine Learning
 
-**Machine Learning → Deep Learning → Generative AI → Reinforcement Learning → AI Engineering**
+Notions fondamentales : data preprocessing, feature scaling, régression linéaire / multiple / polynomiale, régression logistique, SVM et Kernel SVM, K-Means, classification, clustering, évaluation de modèles.
 
-Ce repository constitue à la fois une **bibliothèque personnelle de connaissances**, un espace d'expérimentation et une trace de mon évolution technique dans le domaine de l'Intelligence Artificielle.
+### 1️⃣ [`1_python_ml`](./1_python_ml) — Python for Machine Learning
+
+Manipulation de données et workflows ML en Python : NumPy, Pandas, Matplotlib, préparation de données, visualisation, premiers modèles de régression et de classification sous Jupyter.
+
+### 2️⃣ [`2_deep_learning`](./2_deep_learning) — Deep Learning Foundations
+
+Réseaux de neurones artificiels, MLP, forward propagation, backpropagation, descente de gradient, premiers CNN.
+
+### 3️⃣ [`3_ai_engineering`](./3_ai_engineering) — ML avancé & Deep Learning appliqué
+
+La section la plus dense du dépôt (21 modules progressifs), qui va des techniques d'ensemble jusqu'aux modèles de langage :
+
+| Bloc | Modules |
+|---|---|
+| **Ensemble Learning** | Ensemble Learning Basic, Bagging, Boosting, Boosting Extreme, Boosting ++ |
+| **Robustesse & évaluation** | Données déséquilibrées, régularisation, cross-validation, optimisation et ajustement d'un modèle final, ingénierie des caractéristiques |
+| **Deep Learning appliqué** | Theory Deep Learning, CIFAR-10 (TensorFlow), CIFAR-100, CNN avec PyTorch |
+| **NLP & séquences** | RNNs, Seq2Seq, Sentiment Analysis |
+| **Transformers & LLM** | Transformers, BERT & GPT, projet Transformers |
+| **Transfer Learning** | Transfer Learning in Vision, Transfer Learning in NLP |
+
+### 4️⃣ [`4_ml_algorithms`](./4_ml_algorithms) — Machine Learning Algorithms
+
+Parcours principal d'implémentation, organisé par famille d'apprentissage :
+
+- **1. Supervisé** — Régression · Classification · Ensemble Learning
+- **2. Non-supervisé** — Clustering · Réduction de dimensionnalité
+- **3. Semi-supervisé** — Self-Training · Co-Training · Graph-Based Semi-Supervised Learning
+- **4. Anomaly Detection** — Détection d'anomalies
+- **5. Deep Learning** — MLP · CNN · RNN · Transformers · Variational Autoencoders · GAN · Diffusion Models
+- **6. Reinforcement Learning** — Value-Based Methods · Policy-Based Methods (REINFORCE) · Actor-Critic
+
+### 5️⃣ [`5_projects`](./5_projects) — Projets
+
+Projets de bout en bout mettant en pratique les notions des sections précédentes :
+
+| # | Projet | Domaine |
+|---|---|---|
+| 1 | Système de recommandation de films | Recommender Systems |
+| 2 | Détection de spam | NLP / Classification |
+| 3 | Assistant vocal | Speech / NLP |
+| 4 | Reconnaissance faciale | Computer Vision |
+| 5 | Chatbot | NLP |
+| 6 | Détection d'objets | Computer Vision |
+| 7 | Traducteur | NLP / Seq2Seq |
+| 8 | Chatbot pour l'orientation académique | NLP / LLM |
+
+---
+
+## 🛠️ Technologies
+
+**Langages & outils** — Python, Jupyter Notebook
+**Data & ML** — NumPy, Pandas, Matplotlib, Scikit-Learn
+**Deep Learning** — TensorFlow, PyTorch
+
+> La majorité des implémentations de Deep Learning des premières sections utilisent **TensorFlow**. **PyTorch** est introduit dans les parties plus avancées, notamment pour le Reinforcement Learning.
+
+---
+
+## 🚀 Utilisation
+
+```bash
+# Cloner le dépôt
+git clone https://github.com/Wabaya243/ML-Library.git
+cd ML-Library
+
+# Créer un environnement virtuel
+python -m venv .venv
+source .venv/bin/activate      # Windows : .venv\Scripts\activate
+
+# Installer les dépendances de base
+pip install numpy pandas matplotlib scikit-learn jupyter tensorflow torch
+
+# Lancer Jupyter
+jupyter notebook
+```
+
+Chaque dossier est indépendant : ouvre directement le notebook du sujet qui t'intéresse.
 
 ---
 
@@ -192,18 +142,24 @@ Generative AI
    ↓
 Reinforcement Learning
    ↓
-
-
-   
-Le changement essentiel est vraiment celui-ci :
-
-> **Ce n'est pas une roadmap de choses que tu prévois d'apprendre. C'est la trace structurée de ce que tu as étudié et implémenté, avec une progression technique.**
-
-Et je trouve même que **`Learning Path` est meilleur que `Learning Roadmap`** dans ton cas : *roadmap* donne l'impression que beaucoup de choses sont encore à faire, alors que ton repo documente déjà tout ce parcours.
-
-Ta structure actuelle confirme justement cette progression : `4_ml_algorithms` va jusqu'au Deep Learning, avec notamment MLP, CNN, RNN, Transformers, VAE, GAN et Diffusion Models. 
-
-Le README de départ était donc **bon sur le fond** ; il fallait simplement le faire paraître comme le **journal/bibliothèque complète de ton parcours ML → AI**, et non comme un petit dépôt d'apprentissage en cours.
 AI Engineering
    ↓
 AI Projects
+```
+
+---
+
+## 🎯 Objectif
+
+Documenter et centraliser mon parcours technique :
+
+**Machine Learning → Deep Learning → Generative AI → Reinforcement Learning → AI Engineering**
+
+Ce dépôt est à la fois une **bibliothèque personnelle de connaissances**, un espace d'expérimentation et une trace de mon évolution dans le domaine de l'IA.
+
+---
+
+## 👤 Auteur
+
+**Kambale Divin** — [@Wabaya243](https://github.com/Wabaya243)
+Master 1 Informatique, Université de Kinshasa (UNIKIN)
